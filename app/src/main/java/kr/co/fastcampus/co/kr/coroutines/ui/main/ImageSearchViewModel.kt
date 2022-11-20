@@ -1,5 +1,6 @@
 package kr.co.fastcampus.co.kr.coroutines.ui.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
@@ -16,7 +17,7 @@ class ImageSearchViewModel : ViewModel() {
     private val repository = NaverImageSearchRepository()
     private val queryFlow = MutableSharedFlow<String>()
     private val favorites = mutableSetOf<Item>()
-    private val _favoritesFlow = MutableSharedFlow<List<Item>>()
+    private val _favoritesFlow = MutableSharedFlow<List<Item>>(replay = 1)
 
     val pagingDataFlow = queryFlow
         .flatMapLatest {
@@ -41,6 +42,9 @@ class ImageSearchViewModel : ViewModel() {
         } else {
             favorites.add(item)
         }
+
+        Log.e("ralph", "toggle size = $favorites")
+
         viewModelScope.launch {
             _favoritesFlow.emit(favorites.toList())
         }
